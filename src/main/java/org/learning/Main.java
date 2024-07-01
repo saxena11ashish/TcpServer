@@ -41,9 +41,16 @@ public class Main {
             while(true){
                 System.out.println("Waiting for Client.");
                 // accept() method opens the port and waits for a client to connect with the open port
+                // we want the main thread to accept and create a new connection as soon as possible
+                // so we assign the task of processing the I/P and O/P of connection to a separate thread and keep the main thread free
                 Socket socket = ss.accept();
                 System.out.println("Client connected.");
-                handleRequest(socket);
+                Thread t1 = new Thread(()-> {
+                    try {
+                        handleRequest(socket);
+                    } catch (IOException e) { throw new RuntimeException(e); }
+                });
+                t1.start();
             }
         } catch (IOException e){
             System.out.println(e.getMessage());
